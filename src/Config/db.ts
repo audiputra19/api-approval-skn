@@ -1,9 +1,9 @@
 import mysql from 'mysql2/promise'
 
 const connection = mysql.createPool({
-    host: process.env.DB_HOST,
+    host: 'sukabumi.karixa.co.id',
     user: 'nimda',
-    password: process.env.DB_PASS,
+    password: 'B0r0k0k0K_',
     database: 'bes_medical'
 });
 
