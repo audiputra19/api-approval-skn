@@ -13,9 +13,9 @@ export const MainController = async (req: Request, res: Response) => {
             comp = '1';
         }
 
-        let all = "AND cash_request.`status` = '1'";
+        let all = "cash_request.`status` = '1'";
         if(selectedAll === '1'){
-            all = "AND (cash_request.`status` = '1' OR cash_request.`status` = '3')";
+            all = "(cash_request.`status` = '1' OR cash_request.`status` = '3')";
         }
 
         // console.log('selectedComp:', selectedComp)
@@ -36,9 +36,8 @@ export const MainController = async (req: Request, res: Response) => {
 			cash_request
 			INNER JOIN departemen ON cash_request.div_id = departemen.dept_id
 			INNER JOIN karyawan ON cash_request.nik = karyawan.nik
-			WHERE cash_request.status = '1'
+			WHERE ${all}
 			AND cash_request.utm = ?
-            ${all}
             ORDER BY cash_request.duedate, cash_request.id_cash`, [comp]
         );
 
