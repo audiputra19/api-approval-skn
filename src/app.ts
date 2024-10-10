@@ -9,7 +9,8 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    // origin: 'http://localhost:3000',
+    origin: 'https://project-approval-one.vercel.app',
 }))
 
 //endpoint untuk menjalankan access pin
