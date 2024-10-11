@@ -2,11 +2,14 @@ import { Request, Response } from "express";
 import connection from "../Config/db";
 import { RowDataPacket } from "mysql2";
 import { CashRequest } from "../Interfaces/main";
+import moment from 'moment-timezone';
 
 export const MainController = async (req: Request, res: Response) => {
-    const { selectedComp, selectedAll } = req.body;
+    const { selectedComp, selectedAll, selectedCheckbox } = req.body;
 
     try {
+
+        const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss');
 
         let comp = '0';
         if(selectedComp === '1'){
@@ -45,9 +48,21 @@ export const MainController = async (req: Request, res: Response) => {
             return {
                 ...item
             }
-        }); 
+        });
+        
+        for (const id of selectedCheckbox) {
+            await connection.query<RowDataPacket[]>(
+                `UPDATE cash_request 
+                SET status = '3',
+                appr_date = ? 
+                WHERE id_cash = ?`, [date, id]
+            );
+        }
 
-        res.status(200).json({ data: castReqList });
+        res.status(200).json({ 
+            data: castReqList,
+            message: 'Data berhasil tersimpan'
+        });
         return;
 
     } catch (error) {
