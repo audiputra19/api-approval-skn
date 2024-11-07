@@ -18,7 +18,7 @@ export const MainController = async (req: Request, res: Response) => {
 
         let all = "cash_request.`status` = '1'";
         if(selectedAll === '1'){
-            all = "(cash_request.`status` = '1' OR cash_request.`status` = '3')";
+            all = "(cash_request.`status` = '1' OR cash_request.`status` = '3') AND paid_date NOT NULL";
         }
 
         // console.log('selectedComp:', selectedComp)
@@ -41,6 +41,7 @@ export const MainController = async (req: Request, res: Response) => {
 			INNER JOIN karyawan ON cash_request.nik = karyawan.nik
 			WHERE ${all}
 			AND cash_request.utm = ?
+            AND YEAR(tgl) > '2023'
             ORDER BY cash_request.duedate, cash_request.id_cash`, [comp]
         );
 
