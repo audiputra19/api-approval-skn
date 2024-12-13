@@ -6,23 +6,18 @@ export const PinAccessMiddleware = (req: Request, res: Response, next: NextFunct
     try {
         
         if (!pin) {
-            res.status(400).json({ message: 'Pin harus diisi' });
+            res.status(400).json({ message: 'Pin must be filled in' });
             return;
         }
 
         if (pin.length !== 6) {
-            res.status(400).json({ message: 'Pin harus 6 digit' });
-            return;
-        }
-
-        if (pin !== '123456') {
-            res.status(401).json({ message: 'Pin yang anda masukkan salah' });
+            res.status(400).json({ message: 'Pin must be 6 digits' });
             return;
         }
         
         next();
 
     } catch (error) {
-        res.status(500).json({ message: 'Terjadi kesalahan pada server' })
+        res.status(500).json({ message: 'An error occurred on the server' })
     }
 }

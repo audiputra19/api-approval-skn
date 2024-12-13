@@ -4,6 +4,7 @@ import express, { Request, Response } from 'express'
 import accessRouter from './Routers/accessRouter';
 import cors from 'cors';
 import mainRouter from './Routers/mainRouter';
+import changePinRouter from './Routers/changePinRouter';
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,9 @@ app.use('/', accessRouter);
 
 //endpoint untuk data utama
 app.use('/', mainRouter);
+
+//endpoint untuk ganti pin
+app.use('/', changePinRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Welcome');

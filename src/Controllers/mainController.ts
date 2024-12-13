@@ -62,12 +62,12 @@ export const MainController = async (req: Request, res: Response) => {
 
         res.status(200).json({ 
             data: castReqList,
-            message: 'Data berhasil tersimpan'
+            message: 'Data saved successfully'
         });
         return;
 
     } catch (error) {
-        res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+        res.status(500).json({ message: 'An error occurred on the server' });
         return;
     }
 }
