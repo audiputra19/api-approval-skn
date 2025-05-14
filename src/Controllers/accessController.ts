@@ -9,7 +9,7 @@ export const AccessController = async (req: Request, res: Response) => {
     try {
 
         const [rowUser] = await connection.query<RowDataPacket[]>(
-            `SELECT pin FROM users WHERE nip = ?`, ['20002']
+            `SELECT pin FROM users WHERE nip = ?`, ['30001']
         );
 
         const userPin = rowUser[0].pin;
