@@ -11,11 +11,6 @@ export const MainController = async (req: Request, res: Response) => {
 
         const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss');
 
-        let comp = '0';
-        if(selectedComp === '1'){
-            comp = '1';
-        }
-
         let all = "cash_request.`status` = '1'";
         if(selectedAll === '1'){
             all = "(cash_request.`status` = '1' OR cash_request.`status` = '3') AND paid_date IS NOT NULL";
@@ -38,11 +33,10 @@ export const MainController = async (req: Request, res: Response) => {
 			FROM
 			cash_request
 			INNER JOIN departemen ON cash_request.div_id = departemen.dept_id
-			INNER JOIN karyawan ON cash_request.nik = karyawan.nik
+			INNER JOIN dt_karyawan ON cash_request.nik = dt_karyawan.ID_KAR
 			WHERE ${all}
-			AND cash_request.utm = ?
             AND YEAR(tgl) > '2023'
-            ORDER BY cash_request.duedate, cash_request.id_cash`, [comp]
+            ORDER BY cash_request.duedate, cash_request.id_cash`
         );
 
         const castReqList = (rowCastReq as CashRequest[]).map((item: CashRequest) => {

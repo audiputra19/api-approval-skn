@@ -4,7 +4,7 @@ const connection = mysql.createPool({
     host: process.env.DB_HOST,
     user: 'nimda',
     password: process.env.DB_PASS,
-    database: 'bes_medical'
+    database: 'payroll_new'
 });
 
 connection.getConnection()
