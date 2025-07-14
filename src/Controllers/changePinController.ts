@@ -7,9 +7,9 @@ export const ChangePinController = async (req: Request, res: Response) => {
 
     try {
         await connection.query<RowDataPacket[]>(
-            `UPDATE users SET pin = ? WHERE nip = '72987'`, [newPin]
+            `UPDATE users SET pin = ? WHERE nip = '30001'`, [newPin]
         );
-        
+
         res.status(200).json({ message: 'Pin changed successfully' });
         return;
 
