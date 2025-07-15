@@ -13,7 +13,7 @@ export const MainController = async (req: Request, res: Response) => {
 
         let all = "cash_request.`status` = '1'";
         if(selectedAll === '1'){
-            all = "(cash_request.`status` = '1' OR cash_request.`status` = '3') AND paid_date IS NOT NULL";
+            all = "(cash_request.`status` = '1' OR cash_request.`status` = '3')";
         }
 
         // console.log('selectedComp:', selectedComp)
