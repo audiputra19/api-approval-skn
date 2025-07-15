@@ -32,7 +32,6 @@ export const MainController = async (req: Request, res: Response) => {
 			cash_request.status
 			FROM
 			cash_request
-			INNER JOIN departemen ON cash_request.div_id = departemen.dept_id
 			INNER JOIN dt_karyawan ON cash_request.nik = dt_karyawan.ID_KAR
 			WHERE ${all}
             AND YEAR(tgl) > '2023'
