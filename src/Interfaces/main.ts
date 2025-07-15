@@ -6,5 +6,7 @@ export interface CashRequest {
     peruntukan: string,
     penerima: string,
     norek: string,
-    status: number
+    status: number,
+    referensi: string,
+    divisi: string
 }

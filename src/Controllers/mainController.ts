@@ -29,10 +29,13 @@ export const MainController = async (req: Request, res: Response) => {
 			cash_request.peruntukan,
 			cash_request.penerima,
 			cash_request.norek,
-			cash_request.status
+			cash_request.status,
+            cash_request.referensi,
+            divisi_pengajuan.divisi
 			FROM
 			cash_request
 			INNER JOIN dt_karyawan ON cash_request.nik = dt_karyawan.ID_KAR
+            INNER JOIN divisi_pengajuan ON cash_request.nik = divisi_pengajuan.kadiv
 			WHERE ${all}
             AND YEAR(tgl) > '2023'
             ORDER BY cash_request.duedate, cash_request.id_cash`
