@@ -3,6 +3,7 @@ import connection from "../Config/db";
 import { RowDataPacket } from "mysql2";
 import { CashRequest } from "../Interfaces/main";
 import moment from 'moment-timezone';
+import connSarandi from "../Config/dbSarandi";
 
 export const MainController = async (req: Request, res: Response) => {
     const { selectedComp, selectedAll, selectedCheckbox } = req.body;
@@ -80,5 +81,22 @@ export const FileController = async (req: Request, res: Response) => {
 
     } catch (error) {
         res.status(500).json({ message: 'An error occurred on the server' });
+    }
+}
+
+export const ListPoKontrabon = async (req: Request, res: Response) => {
+    const {noKontrabon} = req.body;
+
+    try {
+        const [rowKontrabon] = await connSarandi.query<RowDataPacket[]>(
+            `SELECT nopo 
+            FROM t_kontra_detail 
+            WHERE id_bon = ?`, 
+            [noKontrabon]
+        );
+        
+        res.status(200).json(rowKontrabon);
+    } catch (error) {
+        res.status(500).json({ message: `An error occurred on the server` })
     }
 }

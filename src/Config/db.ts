@@ -9,10 +9,10 @@ const connection = mysql.createPool({
 
 connection.getConnection()
 .then(() => {
-    console.log('Database connected successfully');
+    console.log('Database payroll connected successfully');
 })
 .catch(err => {
-    console.log('Database connection failed');
+    console.log('Database payroll connection failed');
     console.log(err);
 });
 
