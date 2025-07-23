@@ -67,3 +67,21 @@ export const MainController = async (req: Request, res: Response) => {
         return;
     }
 }
+
+export const FileController = async (req: Request, res: Response) => {
+    const {id} = req.body;
+
+    try {
+        const [rowCastFile] = await connection.query<RowDataPacket[]>(
+            `SELECT * FROM cash_request_files WHERE id_cash = ?`, [id]
+        );
+
+        res.status(200).json({ 
+            data: rowCastFile,
+            message: 'Data saved successfully'
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'An error occurred on the server' });
+    }
+}

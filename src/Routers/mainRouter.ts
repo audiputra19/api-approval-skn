@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { MainController } from "../Controllers/mainController";
+import { FileController, MainController } from "../Controllers/mainController";
 
 const mainRouter = Router();
 
 mainRouter.post('/main', MainController);
+mainRouter.post('/file', FileController);
 
 export default mainRouter

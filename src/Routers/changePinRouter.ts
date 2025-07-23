@@ -5,4 +5,4 @@ const changePinRouter = Router();
 
 changePinRouter.post('/pin-change', ChangePinController);
 
-export default changePinRouter
+export default changePinRouter;
