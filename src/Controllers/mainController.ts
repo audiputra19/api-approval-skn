@@ -76,10 +76,7 @@ export const FileController = async (req: Request, res: Response) => {
             `SELECT * FROM cash_request_files WHERE id_cash = ?`, [id]
         );
 
-        res.status(200).json({ 
-            data: rowCastFile,
-            message: 'Data saved successfully'
-        });
+        res.status(200).json(rowCastFile);
 
     } catch (error) {
         res.status(500).json({ message: 'An error occurred on the server' });
