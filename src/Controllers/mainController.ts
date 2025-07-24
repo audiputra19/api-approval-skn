@@ -4,6 +4,7 @@ import { RowDataPacket } from "mysql2";
 import { CashRequest } from "../Interfaces/main";
 import moment from 'moment-timezone';
 import connSarandi from "../Config/dbSarandi";
+import connAcc from "../Config/dbAcc";
 
 export const MainController = async (req: Request, res: Response) => {
     const { selectedComp, selectedAll, selectedCheckbox } = req.body;
@@ -39,6 +40,7 @@ export const MainController = async (req: Request, res: Response) => {
             INNER JOIN divisi_pengajuan ON cash_request.nik = divisi_pengajuan.kadiv
 			WHERE ${all}
             AND YEAR(tgl) > '2023'
+            AND appr_person = '72987'
             ORDER BY cash_request.duedate, cash_request.id_cash`
         );
 
@@ -96,6 +98,52 @@ export const ListPoKontrabon = async (req: Request, res: Response) => {
         );
         
         res.status(200).json(rowKontrabon);
+    } catch (error) {
+        res.status(500).json({ message: `An error occurred on the server` })
+    }
+}
+
+interface Saldo {
+    saldo: number | string | null;
+}
+
+const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
+    const [cekSaldoAwal] = await connAcc.query<RowDataPacket[]>(
+        `SELECT saldo FROM saldo_real WHERE noacc = ?`,[norek]
+    );
+    const saldoAwal = cekSaldoAwal[0] as Saldo;
+
+    const [cekBank] = await connection.query<RowDataPacket[]>(
+        `SELECT SUM(jumlah) as saldo
+        FROM cash_request 
+        WHERE cash_request.duedate BETWEEN ? AND ?
+        AND cash_request.bank_kredit = ?
+        AND cash_request.status = '5'
+        AND (cash_request.paid_date is not null 
+        OR cash_request.paid_date <> '1970-01-01 00:00:00' 
+        OR cash_request.paid_date <> '0000-00-00 00:00:00')`,
+        [tgl1, tgl2, norek]
+    );
+    const saldoBank = cekBank[0] as Saldo;
+    
+    const saldoAkhir = Number(saldoAwal.saldo) - Number(saldoBank.saldo);
+
+    return saldoAkhir;
+}
+
+export const GetSaldoController = async (req: Request, res: Response) => {
+    const {tgl1, tgl2} = req.body;
+
+    try {
+        const saldoMandiri = await getSaldoAkhir(tgl1, tgl2, '111030');
+        const saldoBca = await getSaldoAkhir(tgl1, tgl2, '111016');
+        const saldoKas = await getSaldoAkhir(tgl1, tgl2, '111002');
+
+        res.status(200).json({
+            saldoMandiri,
+            saldoBca,
+            saldoKas
+        });
     } catch (error) {
         res.status(500).json({ message: `An error occurred on the server` })
     }
