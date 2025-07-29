@@ -7,16 +7,35 @@ import connSarandi from "../Config/dbSarandi";
 import connAcc from "../Config/dbAcc";
 
 export const MainController = async (req: Request, res: Response) => {
-    const { selectedComp, selectedAll, selectedCheckbox } = req.body;
+    const { selectedTipe, selectedAll, selectedCheckbox } = req.body;
 
     try {
-
+        
         const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss');
 
-        let all = "cash_request.`status` = '1'";
-        if(selectedAll === '1'){
-            all = "(cash_request.`status` = '1' OR cash_request.`status` = '3')";
+        let where = "";
+        if(selectedTipe === '1'){
+            let tipe = "(cash_request.acc_po = '0' OR cash_request.acc_po IS NULL)";
+            if(selectedTipe === '1'){
+                tipe = "cash_request.acc_po = '1'";
+            }
+
+            where = 
+            `WHERE ${tipe}
+            AND YEAR(tgl) > '2023'`
+        } else {
+            let all = "cash_request.`status` = '1'";
+            if(selectedAll === '1'){
+                all = "(cash_request.`status` = '1' OR cash_request.`status` = '3')";
+            }
+
+            where = 
+            `WHERE ${all}
+            AND YEAR(tgl) > '2023'
+            AND appr_person = '72987'`
         }
+
+
 
         // console.log('selectedComp:', selectedComp)
         // console.log('comp:', comp);
@@ -38,9 +57,7 @@ export const MainController = async (req: Request, res: Response) => {
 			cash_request
 			INNER JOIN dt_karyawan ON cash_request.nik = dt_karyawan.ID_KAR
             INNER JOIN divisi_pengajuan ON cash_request.nik = divisi_pengajuan.kadiv
-			WHERE ${all}
-            AND YEAR(tgl) > '2023'
-            AND appr_person = '72987'
+			${where}
             ORDER BY cash_request.duedate, cash_request.id_cash`
         );
 
@@ -91,7 +108,7 @@ export const ListPoKontrabon = async (req: Request, res: Response) => {
 
     try {
         const [rowKontrabon] = await connSarandi.query<RowDataPacket[]>(
-            `SELECT nopo 
+            `SELECT nopo
             FROM t_kontra_detail 
             WHERE id_bon = ?`, 
             [noKontrabon]
