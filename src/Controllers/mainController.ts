@@ -20,8 +20,13 @@ export const MainController = async (req: Request, res: Response) => {
                 tipe = "cash_request.acc_po = '1'";
             }
 
+            let all = "AND cash_request.`status` = '1'";
+            if(selectedAll === '1'){
+                all = "AND (cash_request.`status` = '1' OR cash_request.`status` = '3')";
+            }
+
             where = 
-            `WHERE ${tipe}
+            `WHERE ${tipe} ${all}
             AND YEAR(tgl) > '2023'`
         } else {
             let all = "cash_request.`status` = '1'";
