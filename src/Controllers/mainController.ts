@@ -138,17 +138,25 @@ const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
     const [cekBank] = await connection.query<RowDataPacket[]>(
         `SELECT SUM(jumlah) as saldo
         FROM cash_request 
-        WHERE cash_request.duedate BETWEEN ? AND ?
+        WHERE DATE(cash_request.duedate) BETWEEN ? AND ?
         AND cash_request.bank_kredit = ?
         AND cash_request.status = '5'
-        AND (cash_request.paid_date is not null 
-        OR cash_request.paid_date <> '1970-01-01 00:00:00' 
+        AND (cash_request.paid_date <> '1970-01-01 00:00:00' 
         OR cash_request.paid_date <> '0000-00-00 00:00:00')`,
         [tgl1, tgl2, norek]
     );
     const saldoBank = cekBank[0] as Saldo;
+
+    const [cekSaldo] = await connection.query<RowDataPacket[]>(
+        `SELECT SUM(cash_request.jumlah) as saldo 
+        FROM cash_request 
+        WHERE cash_request.saldo_rek = ?
+        AND cash_request.status = '5'`,
+        [norek]
+    );
+    const tambahSaldo = cekSaldo[0] as Saldo;
     
-    const saldoAkhir = Number(saldoAwal.saldo) - Number(saldoBank.saldo);
+    const saldoAkhir = Number(saldoAwal.saldo) + Number(tambahSaldo.saldo) - Number(saldoBank.saldo);
 
     return saldoAkhir;
 }
