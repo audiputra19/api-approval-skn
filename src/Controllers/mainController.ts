@@ -147,16 +147,25 @@ const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
     );
     const saldoBank = cekBank[0] as Saldo;
 
-    const [cekSaldo] = await connection.query<RowDataPacket[]>(
+    const [cekTambahSaldo] = await connection.query<RowDataPacket[]>(
         `SELECT SUM(cash_request.jumlah) as saldo 
         FROM cash_request 
-        WHERE cash_request.saldo_rek = ?
+        WHERE cash_request.pindah_kredit = ?
         AND cash_request.status = '5'`,
         [norek]
     );
-    const tambahSaldo = cekSaldo[0] as Saldo;
+    const tambahSaldo = cekTambahSaldo[0] as Saldo;
+
+    const [cekKurangSaldo] = await connection.query<RowDataPacket[]>(
+        `SELECT SUM(cash_request.jumlah) as saldo 
+        FROM cash_request 
+        WHERE cash_request.pindah_debet = ?
+        AND cash_request.status = '5'`,
+        [norek]
+    );
+    const kurangSaldo = cekKurangSaldo[0] as Saldo;
     
-    const saldoAkhir = Number(saldoAwal.saldo) + Number(tambahSaldo.saldo) - Number(saldoBank.saldo);
+    const saldoAkhir = Number(saldoAwal.saldo) + Number(tambahSaldo.saldo) - Number(kurangSaldo.saldo) - Number(saldoBank.saldo);
 
     return saldoAkhir;
 }
