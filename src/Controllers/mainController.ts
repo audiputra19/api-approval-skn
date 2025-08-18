@@ -171,9 +171,37 @@ const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
 }
 
 export const GetSaldoController = async (req: Request, res: Response) => {
-    const {tgl1, tgl2} = req.body;
 
     try {
+        const [rows] = await connection.query<RowDataPacket[]>(
+            `SELECT
+            cash_request.tgl,
+            cash_request.duedate
+            FROM
+            cash_request
+            ORDER BY 
+            cash_request.duedate ASC
+            LIMIT 1`
+        );
+        const getDate1 = rows[0] as {duedate: string}
+        const tgl1 = getDate1.duedate;
+
+        const [rows2] = await connection.query<RowDataPacket[]>(
+            `SELECT
+            cash_request.tgl,
+            cash_request.duedate
+            FROM
+            cash_request
+            ORDER BY 
+            cash_request.duedate DESC
+            LIMIT 1`
+        );
+        const getDate2 = rows2[0] as {duedate: string}
+        const tgl2 = getDate2.duedate;
+
+        console.log("Tanggal 1: ", tgl1);
+        console.log("Tanggal 2: ", tgl2);
+
         const saldoMandiri = await getSaldoAkhir(tgl1, tgl2, '111030');
         const saldoBca = await getSaldoAkhir(tgl1, tgl2, '111016');
         const saldoKas = await getSaldoAkhir(tgl1, tgl2, '111002');
