@@ -152,7 +152,7 @@ const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
         `SELECT SUM(cash_request.jumlah) as saldo 
         FROM cash_request 
         WHERE DATE(cash_request.duedate) BETWEEN ? AND ?
-        AND cash_request.pindah_kredit = ?
+        AND cash_request.pindah_debet = ?
         AND cash_request.status = '5'`,
         [tgl1, tgl2, norek]
     );
@@ -162,7 +162,7 @@ const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
         `SELECT SUM(cash_request.jumlah) as saldo 
         FROM cash_request 
         WHERE DATE(cash_request.duedate) BETWEEN ? AND ?
-        AND cash_request.pindah_debet = ?
+        AND cash_request.pindah_kredit = ?
         AND cash_request.status = '5'`,
         [tgl1, tgl2, norek]
     );
