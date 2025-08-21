@@ -142,7 +142,8 @@ const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
         AND cash_request.bank_kredit = ?
         AND cash_request.status = '5'
         AND (cash_request.paid_date <> '1970-01-01 00:00:00' 
-        OR cash_request.paid_date <> '0000-00-00 00:00:00')`,
+        OR cash_request.paid_date <> '0000-00-00 00:00:00')
+        AND saldo_masuk = '0'`,
         [tgl1, tgl2, norek]
     );
     const saldoBank = cekBank[0] as Saldo;
@@ -150,22 +151,35 @@ const getSaldoAkhir = async (tgl1: string, tgl2: string, norek: string) => {
     const [cekTambahSaldo] = await connection.query<RowDataPacket[]>(
         `SELECT SUM(cash_request.jumlah) as saldo 
         FROM cash_request 
-        WHERE cash_request.pindah_kredit = ?
+        WHERE DATE(cash_request.duedate) BETWEEN ? AND ?
+        AND cash_request.pindah_kredit = ?
         AND cash_request.status = '5'`,
-        [norek]
+        [tgl1, tgl2, norek]
     );
     const tambahSaldo = cekTambahSaldo[0] as Saldo;
 
     const [cekKurangSaldo] = await connection.query<RowDataPacket[]>(
         `SELECT SUM(cash_request.jumlah) as saldo 
         FROM cash_request 
-        WHERE cash_request.pindah_debet = ?
+        WHERE DATE(cash_request.duedate) BETWEEN ? AND ?
+        AND cash_request.pindah_debet = ?
         AND cash_request.status = '5'`,
-        [norek]
+        [tgl1, tgl2, norek]
     );
     const kurangSaldo = cekKurangSaldo[0] as Saldo;
+
+    const [cekSaldoMasuk] = await connection.query<RowDataPacket[]>(
+        `SELECT SUM(saldo_masuk) AS saldo 
+        FROM cash_request 
+        WHERE DATE(cash_request.duedate) BETWEEN ? AND ? 
+        AND cash_request.bank_kredit = ?
+        AND cash_request.status = '5'
+        AND saldo_masuk <> '0'`,
+        [tgl1, tgl2, norek]
+    );
+    const saldoMasuk = cekSaldoMasuk[0] as Saldo;
     
-    const saldoAkhir = Number(saldoAwal.saldo) + Number(tambahSaldo.saldo) - Number(kurangSaldo.saldo) - Number(saldoBank.saldo);
+    const saldoAkhir = Number(saldoAwal.saldo) + Number(saldoMasuk.saldo) + Number(tambahSaldo.saldo) - Number(kurangSaldo.saldo) - Number(saldoBank.saldo);
 
     return saldoAkhir;
 }
