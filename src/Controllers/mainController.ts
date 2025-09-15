@@ -7,7 +7,7 @@ import connSarandi from "../Config/dbSarandi";
 import connAcc from "../Config/dbAcc";
 
 export const MainController = async (req: Request, res: Response) => {
-    const { selectedTipe, selectedAll, selectedCheckbox } = req.body;
+    const { selectedTipe, selectedAll, selectedCheckbox, action } = req.body;
 
     try {
         
@@ -71,13 +71,15 @@ export const MainController = async (req: Request, res: Response) => {
                 ...item
             }
         });
+
+        let newStatus = action === "reject" ? "6" : "3";
         
         for (const id of selectedCheckbox) {
             await connection.query<RowDataPacket[]>(
                 `UPDATE cash_request 
-                SET status = '3',
+                SET status = ?,
                 appr_date = ? 
-                WHERE id_cash = ?`, [date, id]
+                WHERE id_cash = ?`, [newStatus, date, id]
             );
         }
 
